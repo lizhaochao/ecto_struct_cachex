@@ -16,6 +16,5 @@ Download via [Gitee](https://gitee.com/lizhaochao/ecto_struct_cachex_sample) or 
 
 ## Contributing
 Contributions to ecto_struct_cachex are very welcome!
-Contributions to ecto_struct_cachex are very welcome!
 
 Bug reports, documentation, spelling corrections... all of those (and probably more) are much appreciated contributions!
