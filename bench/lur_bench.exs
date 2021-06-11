@@ -12,11 +12,15 @@ defmodule LURBench do
     %User{id: 4, name: "same_name"},
     %User{id: 5, name: "same_name"}
   ]
-
+  @obj %User{id: 9, name: "n9"}
   @list_len length(@lru_list)
+  @capacity @list_len
 
-  bench("put", do: ESC.LRU.put(@lru_list, %User{id: 199, name: "name199"}))
+  ### put operate
+  bench("only put", do: ESC.LRU.put(@lru_list, @obj))
+  bench("put - should remove", do: ESC.LRU.put(@lru_list, @obj, @list_len, @capacity))
 
+  ### get operate
   bench("get - empty cond", do: ESC.LRU.get(@lru_list, [], @list_len))
   bench("get - by id - obj at top", do: ESC.LRU.get(@lru_list, 1, @list_len))
   bench("get - by conds - obj at top", do: ESC.LRU.get(@lru_list, [id: 1], @list_len))

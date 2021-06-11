@@ -4,10 +4,16 @@ defmodule ESC.LRU do
   @empty_cond_idx 0
   @obj_at_top_idx 1
 
-  ###
-  def put(list, %_{} = obj)
+  ### Interface
+  def put(list, obj, len \\ nil, cap \\ nil)
+
+  def put(list, %_{} = obj, nil = _len, nil = _cap)
       when is_list(list),
-      do: [obj | list]
+      do: add(obj, list)
+
+  def put(list, %_{} = obj, len, cap)
+      when is_list(list) and is_integer(len) and len >= 0 and is_integer(cap) and cap > 0,
+      do: obj |> add(list) |> del_last(len, cap)
 
   def get(list, id, len)
       when is_list(list) and is_integer(id) and is_integer(len) and len >= 0,
@@ -17,7 +23,7 @@ defmodule ESC.LRU do
       when is_list(list) and is_list(conds) and is_integer(len) and len >= 0,
       do: list |> get_by_conds(conds) |> make_result(list, len)
 
-  ###
+  ### Implements Get
   def get_by_conds(list, conds) do
     {_found, _left, _idx} = init = {nil, 0, []}
     do_get_by_conds(init, list, conds)
@@ -60,7 +66,7 @@ defmodule ESC.LRU do
     {found, new_list}
   end
 
-  ###
+  ##
   def found?(%_{} = _obj, [] = _conds, nil = _found), do: false
 
   def found?(%_{} = obj, [_ | _] = conds, nil = _found) do
@@ -80,4 +86,9 @@ defmodule ESC.LRU do
   def make_left(_list, left, found), do: [found | Enum.reverse(left)]
   def make_right(list, len, idx) when len != idx, do: Enum.take(list, idx - len)
   def make_right(_list, _len, _idx), do: []
+
+  ### Implements Put
+  def add(obj, list), do: [obj | list]
+  def del_last(list, len, cap) when len == cap, do: Enum.reverse(tl(Enum.reverse(list)))
+  def del_last(list, _len, _cap), do: list
 end

@@ -1,0 +1,10 @@
+duration:1.0;mem stats:false;sys mem stats:false
+## LURBench
+benchmark name                  iterations   average time
+only put                         100000000   0.09 µs/op
+get - empty cond                  10000000   0.15 µs/op
+put - should remove               10000000   0.23 µs/op
+get - by id - obj at top          10000000   0.27 µs/op
+get - by conds - obj at top       10000000   0.58 µs/op
+get - by conds - obj at mid        1000000   1.71 µs/op
+get - by conds - obj at bottom     1000000   2.21 µs/op

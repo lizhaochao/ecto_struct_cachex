@@ -120,4 +120,16 @@ defmodule LRUTest do
     obj = %User{id: 199, name: "name199"}
     assert [obj | @list] == LRU.put(@list, obj)
   end
+
+  test "put - should remove last" do
+    obj = %User{id: 199, name: "name199"}
+
+    assert [
+             obj,
+             %User{id: 1, name: "name1"},
+             %User{id: 2, name: "name2"},
+             %User{id: 3, name: "name3"},
+             %User{id: 4, name: "same_name"}
+           ] == LRU.put(@list, obj, 5, 5)
+  end
 end

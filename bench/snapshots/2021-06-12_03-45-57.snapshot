@@ -1,8 +1,0 @@
-duration:1.0;mem stats:false;sys mem stats:false
-module;test;tags;iterations;elapsed
-LURBench	get - by conds - obj at bottom		1000000	2483742
-LURBench	get - by conds - obj at mid		1000000	1975701
-LURBench	get - by conds - obj at top		10000000	5403504
-LURBench	get - by id - obj at top		10000000	2678891
-LURBench	get - empty cond		10000000	1667681
-LURBench	put		100000000	6993760
