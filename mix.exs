@@ -51,10 +51,11 @@ defmodule EctoStructCachex.MixProject do
       {:propcheck, "~> 1.4.0", only: :test},
       {:credo, "~> 1.5.5", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.24.2", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.1.0", only: :dev, runtime: false}
+      {:dialyxir, "~> 1.1.0", only: :dev, runtime: false},
+      {:benchfella, "~> 0.3.5", only: :dev}
     ]
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
-  defp aliases, do: [test: ["format", "test"]]
+  defp aliases, do: [test: ["format", "test"], bench: ["format", "bench"]]
 end
