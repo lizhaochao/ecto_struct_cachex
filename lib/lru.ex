@@ -4,7 +4,7 @@ defmodule ESC.LRU do
   @empty_cond_idx 0
   @obj_at_top_idx 1
 
-  ### Interface Put
+  ### Interface
   def put(list, obj, len \\ nil, cap \\ nil)
 
   def put(list, %_{} = obj, nil = _len, nil = _cap)
