@@ -63,10 +63,12 @@ defmodule CacheObjectTest do
   end
 
   def assert_meta(module, expected_len) do
-    repo1 = Repo.get_all()
-    users1 = get_in(repo1, [:db, module])
-    user_len1 = get_in(repo1, [:meta, :len, module])
-    assert length(users1) == user_len1
-    assert expected_len == user_len1
+    repo = Repo.get_all()
+    list = get_in(repo, [:db, module])
+    ids = get_in(repo, [:meta, :ids, module])
+    len = get_in(repo, [:meta, :len, module])
+    assert expected_len == length(ids)
+    assert expected_len == length(list)
+    assert expected_len == len
   end
 end
