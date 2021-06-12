@@ -1,12 +1,15 @@
 defmodule CachePutTest do
   use ExUnit.Case
 
-  alias ESC.Repo
+  alias ESC.{Config, Repo}
 
-  setup_all do
+  setup do
     Repo.init()
     :ok
   end
+
+  @unused_id 3
+  @unused_name "name3"
 
   test "create ok" do
     ## first get
@@ -35,6 +38,24 @@ defmodule CachePutTest do
     |> Enum.each(fn _ ->
       {:ok, %User{id: _, name: _, role: %Role{id: _, name: _}}} = API.get_user(id: uid1)
       assert_meta(User, 5)
+    end)
+  end
+
+  test "lru with capacity ok" do
+    capacity = Config.get_default_capacity()
+
+    ## n times create
+    1..capacity
+    |> Enum.each(fn x ->
+      {:ok, %User{role: %Role{}}} = API.create_user(@unused_id, @unused_name)
+      assert_meta(User, x)
+    end)
+
+    ## n times create, up to capacity
+    1..10
+    |> Enum.each(fn _ ->
+      {:ok, %User{role: %Role{}}} = API.create_user(@unused_id, @unused_name)
+      assert_meta(User, capacity)
     end)
   end
 
