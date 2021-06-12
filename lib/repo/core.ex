@@ -128,6 +128,9 @@ defmodule ESC.Core do
 
   def found?(%_{} = _obj, _conds, _found), do: false
 
+  def make_left(list, left, found \\ nil)
+  def make_left(list, _left, nil = _found), do: list
+  def make_left(_list, left, found), do: [found | Enum.reverse(left)]
   def make_right(list, idx, len) when len != idx, do: Enum.take(list, idx - len)
   def make_right(_list, _idx, _len), do: []
 end

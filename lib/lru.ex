@@ -1,7 +1,7 @@
 defmodule ESC.LRU do
   @moduledoc false
 
-  alias ESC.Core
+  alias ESC.Core, as: Impl
 
   @empty_cond_idx 0
   @obj_at_top_idx 1
@@ -39,7 +39,7 @@ defmodule ESC.LRU do
   end
 
   def do_get_by_conds({found, idx, left}, [%_{} = obj | rest], conds) do
-    found? = Core.found?(obj, conds, found)
+    found? = Impl.found?(obj, conds, found)
     break_or_continue({found, idx, left}, [%_{} = obj | rest], conds, found?)
   end
 
@@ -60,16 +60,12 @@ defmodule ESC.LRU do
 
   def make_result({found, idx, left}, list, len)
       when len == idx,
-      do: {found, make_left(list, left, found)}
+      do: {found, Impl.make_left(list, left, found)}
 
   def make_result({found, idx, left}, list, len) do
-    new_list = make_left(list, left, found) ++ Core.make_right(list, idx, len)
+    new_list = Impl.make_left(list, left, found) ++ Impl.make_right(list, idx, len)
     {found, new_list}
   end
-
-  def make_left(list, left, found \\ nil)
-  def make_left(list, _left, nil = _found), do: list
-  def make_left(_list, left, found), do: [found | Enum.reverse(left)]
 
   ### Implements Put
   def add(obj, list), do: [obj | list]
