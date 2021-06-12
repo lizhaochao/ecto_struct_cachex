@@ -1,8 +1,8 @@
 defmodule Helper do
   @moduledoc false
   def make_user do
-    user_id = System.unique_integer([:positive]) * 99 + 98
-    role_id = System.unique_integer([:positive]) * 98 + 97
+    user_id = System.unique_integer([:positive])
+    role_id = System.unique_integer([:positive])
 
     %User{
       id: user_id,
@@ -12,7 +12,7 @@ defmodule Helper do
   end
 
   def make_role do
-    role_id = System.unique_integer([:positive]) * 98 + 97
+    role_id = System.unique_integer([:positive])
     %Role{id: role_id, name: "r_name#{role_id}"}
   end
 end
