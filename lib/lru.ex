@@ -72,8 +72,8 @@ defmodule ESC.LRU do
 
   def del_last({_del_id, list}, len, cap) when len == cap do
     with(
-      l = Enum.reverse(list),
-      %{id: del_id} = hd(l)
+      l <- Enum.reverse(list),
+      %{id: del_id} <- hd(l)
     ) do
       {del_id, Enum.reverse(tl(l))}
     end

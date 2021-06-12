@@ -1,4 +1,5 @@
 defmodule Helper do
+  @moduledoc false
   def make_user do
     user_id = System.unique_integer([:positive]) * 99 + 98
     role_id = System.unique_integer([:positive]) * 98 + 97
@@ -22,6 +23,7 @@ defmodule CacheDecorator do
 end
 
 defmodule API do
+  @moduledoc false
   use CacheDecorator
 
   @decorate cache_put(User)
