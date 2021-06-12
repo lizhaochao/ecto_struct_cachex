@@ -50,8 +50,8 @@ defmodule ESC.Cache do
   def save(struct_name, list, len, obj, cap, ids, cached_obj \\ nil) do
     with(
       %{id: id} <- obj,
-      ids <- make_ids(ids, id, cached_obj),
-      {_del_id, list} <- make_list(list, obj, cached_obj),
+      {del_id, list} <- make_list(list, obj, cached_obj),
+      ids <- make_ids(ids, id, del_id, cached_obj),
       len <- make_len(len, cap, cached_obj)
     ) do
       save(struct_name, list, len, ids)
@@ -75,9 +75,11 @@ defmodule ESC.Cache do
   def make_list(list, obj, nil = _cached_obj), do: LRU.put(list, obj)
   def make_list(list, _obj, _cached_obj), do: {nil, list}
 
-  def make_ids(ids, id, cached_obj \\ nil)
-  def make_ids(ids, id, nil = _cached_obj), do: ESCList.radd(ids, id)
-  def make_ids(ids, _id, _cached_obj), do: ids
+  def make_ids(ids, id, del_id, cached_obj), do: ids |> add_id(id, cached_obj) |> del_id(del_id)
+  def del_id(ids, nil = _id), do: ids
+  def del_id(ids, id), do: ESCList.rdel(ids, id)
+  def add_id(ids, id, nil = _cached_obj), do: ESCList.radd(ids, id)
+  def add_id(ids, _id, _cached_obj), do: ids
 
   def make_len(len, cap, cached_obj \\ nil)
   def make_len(len, cap, nil = _cached_obj) when len != cap, do: len + 1
