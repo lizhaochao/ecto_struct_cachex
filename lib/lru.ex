@@ -1,8 +1,11 @@
 defmodule ESC.LRU do
   @moduledoc false
 
+  alias ESC.Core
+
   @empty_cond_idx 0
   @obj_at_top_idx 1
+  @get_recursive_init_data {nil, 0, []}
 
   ### Interface
   def put(list, obj, len \\ nil, cap \\ nil)
@@ -24,10 +27,8 @@ defmodule ESC.LRU do
       do: list |> get_by_conds(conds) |> make_result(list, len)
 
   ### Implements Get
-  def get_by_conds(list, conds) do
-    {_found, _left, _idx} = init = {nil, 0, []}
-    do_get_by_conds(init, list, conds)
-  end
+  def get_by_conds([] = _list, _conds), do: @get_recursive_init_data
+  def get_by_conds(list, conds), do: do_get_by_conds(@get_recursive_init_data, list, conds)
 
   def do_get_by_conds({found, idx, _left}, list, [] = _conds), do: {found, idx, list}
   def do_get_by_conds({found, idx, left}, [] = _list, _conds), do: {found, idx, left}
@@ -38,16 +39,16 @@ defmodule ESC.LRU do
   end
 
   def do_get_by_conds({found, idx, left}, [%_{} = obj | rest], conds) do
-    found? = found?(obj, conds, found)
+    found? = Core.found?(obj, conds, found)
     break_or_continue({found, idx, left}, [%_{} = obj | rest], conds, found?)
   end
 
   def break_or_continue({found, idx, left}, [%_{} = obj | rest], conds, found?) do
     rest = if found?, do: [], else: rest
-    new_idx = idx + 1
+    idx = idx + 1
 
     found?
-    |> if(do: {obj, new_idx, left}, else: {found, new_idx, [obj | left]})
+    |> if(do: {obj, idx, left}, else: {found, idx, [obj | left]})
     |> do_get_by_conds(rest, conds)
   end
 
@@ -59,33 +60,12 @@ defmodule ESC.LRU do
 
   def make_result({found, idx, left}, list, len)
       when len == idx,
-      do: {found, make_left(list, left, found)}
+      do: {found, Core.make_left(list, left, found)}
 
   def make_result({found, idx, left}, list, len) do
-    new_list = make_left(list, left, found) ++ make_right(list, len, idx)
+    new_list = Core.make_left(list, left, found) ++ Core.make_right(list, idx, len)
     {found, new_list}
   end
-
-  ##
-  def found?(%_{} = _obj, [] = _conds, nil = _found), do: false
-
-  def found?(%_{} = obj, [_ | _] = conds, nil = _found) do
-    Enum.map(conds, fn {k, expected} ->
-      Map.fetch(obj, k)
-      |> case do
-        {:ok, v} -> expected == v
-        _ -> false
-      end
-    end)
-    |> Enum.all?()
-  end
-
-  def found?(%_{} = _obj, _conds, _found), do: false
-
-  def make_left(list, _left, nil = _found), do: list
-  def make_left(_list, left, found), do: [found | Enum.reverse(left)]
-  def make_right(list, len, idx) when len != idx, do: Enum.take(list, idx - len)
-  def make_right(_list, _len, _idx), do: []
 
   ### Implements Put
   def add(obj, list), do: [obj | list]

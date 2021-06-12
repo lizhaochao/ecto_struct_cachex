@@ -17,6 +17,7 @@ defmodule CoreTest do
   @user_5 %User{id: 5, name: "same_n", role: %Parent{id: 4, name: "r4"}}
 
   @list [@user_1, @user_2, @user_3, @user_4, @user_5]
+  @list_len length(@list)
 
   ###
   describe "delete_by_struct" do
@@ -54,6 +55,24 @@ defmodule CoreTest do
 
     test "del nothing - unknown struct" do
       assert @list == Core.delete_by_struct(@list, Unknown, 99)
+    end
+  end
+
+  describe "delete" do
+    test "by id" do
+      assert [@user_2, @user_3, @user_4, @user_5] == Core.delete(@list, 1, @list_len)
+    end
+
+    test "by conds - del one" do
+      assert [@user_2, @user_3, @user_4, @user_5] == Core.delete(@list, [id: 1], @list_len)
+    end
+
+    test "by conds - del two" do
+      assert [@user_1, @user_2, @user_3] == Core.delete(@list, [name: "same_n"], @list_len)
+    end
+
+    test "by conds - empty list" do
+      assert [] == Core.delete([], [name: "same_n"], @list_len)
     end
   end
 end
