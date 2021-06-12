@@ -1,7 +1,7 @@
 defmodule ESC.Cache do
   @moduledoc false
 
-  alias ESC.{LRU, Repo}
+  alias ESC.{Core, LRU, Repo}
 
   ### Interface
   def get(struct_name, conds_or_id, exec_block) when is_atom(struct_name) do
@@ -21,6 +21,7 @@ defmodule ESC.Cache do
     with(
       {:ok, %_{} = obj} <- exec_block.(),
       {list, len, cap, ids} <- get_data(struct_name),
+      {list, len, ids} <- del_if_exists(list, len, obj, ids),
       [_ | _] <- save(struct_name, list, len, obj, cap, ids)
     ) do
       {:ok, obj}
@@ -46,6 +47,19 @@ defmodule ESC.Cache do
 
   def exec_block_if_needed(nil = _obj, exec_block), do: exec_block.()
   def exec_block_if_needed(%_{} = obj, _exec_block), do: {:ok, obj}
+
+  def del_if_exists(list, len, %{id: id} = _obj, ids) do
+    exists? = ESCList.exists?(ids, id)
+
+    if exists? do
+      list = Core.delete(list, id, len)
+      len = len - 1
+      ids = ESCList.rdel(ids, id)
+      {list, len, ids}
+    else
+      {list, len, ids}
+    end
+  end
 
   def save(struct_name, list, len, obj, cap, ids, cached_obj \\ nil) do
     with(
