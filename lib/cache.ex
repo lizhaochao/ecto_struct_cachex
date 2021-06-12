@@ -17,6 +17,18 @@ defmodule ESC.Cache do
     end
   end
 
+  def put(struct_name, exec_block) do
+    with(
+      {:ok, %_{} = obj} <- exec_block.(),
+      {list, len, cap} <- get_list(struct_name),
+      [_ | _] <- save_list(list, nil, obj, len, cap, struct_name)
+    ) do
+      {:ok, obj}
+    else
+      _ -> :put_obj_error
+    end
+  end
+
   ### Implements
   def get_list(struct_name) do
     fn repo ->
@@ -48,6 +60,7 @@ defmodule ESC.Cache do
     end
   end
 
+  def make_list(list, obj, cached_obj \\ nil)
   def make_list(list, obj, nil = _cached_obj), do: LRU.put(list, obj)
   def make_list(list, _obj, _cached_obj), do: list
 

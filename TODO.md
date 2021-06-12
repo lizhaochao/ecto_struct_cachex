@@ -1,7 +1,8 @@
 # >> Frontend
 ## 1. Use via decorator
 ### 1.1 Define 2 functions
-- cache_object() - get, create
+- cache_object() - get
+- cache_put() - create
 - evict_objects() - update, delete
 
   args: 
@@ -90,3 +91,6 @@
 - sync_update
 - update (async)
 
+###
+1. store capacity which is from use config.  ESC.Cache
+2. 

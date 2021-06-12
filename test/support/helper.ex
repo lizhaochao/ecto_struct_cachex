@@ -15,3 +15,33 @@ defmodule Helper do
     %Role{id: role_id, name: "r_name#{role_id}"}
   end
 end
+
+defmodule CacheDecorator do
+  @moduledoc false
+  use ESC
+end
+
+defmodule API do
+  use CacheDecorator
+
+  @decorate cache_put(User)
+  def create_user(id, name) do
+    {id, name}
+    user = Helper.make_user()
+    {:ok, user}
+  end
+
+  @decorate cache_object(User)
+  def get_user(conds) do
+    {conds}
+    user = Helper.make_user()
+    {:ok, user}
+  end
+
+  @decorate cache_object(Role)
+  def get_role_by_id(id) do
+    {id}
+    user = Helper.make_role()
+    {:ok, user}
+  end
+end
