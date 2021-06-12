@@ -3,9 +3,10 @@ defmodule ESC do
 
   defmacro __using__(opts) do
     quote do
-      use Decorator.Define, cache_object: 1, cache_put: 1
+      use Decorator.Define, cache_object: 1, cache_put: 1, cache_evict: 1
       use ESC.Decorator.CacheObject, unquote(opts)
       use ESC.Decorator.CachePut, unquote(opts)
+      use ESC.Decorator.CacheEvict, unquote(opts)
     end
   end
 end

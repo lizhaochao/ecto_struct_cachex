@@ -32,6 +32,17 @@ defmodule ESC.Cache do
     end
   end
 
+  def delete(struct_name, conds_or_id, exec_block) when is_atom(struct_name) do
+    with(
+      :ok <- exec_block.(),
+      _ <- conds_or_id
+    ) do
+      :ok
+    else
+      _ -> :delete_obj_error
+    end
+  end
+
   ### Implements
   def get_data(struct_name, default_capacity) do
     fn repo ->

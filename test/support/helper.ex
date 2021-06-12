@@ -33,6 +33,18 @@ defmodule API do
     {:ok, user}
   end
 
+  @decorate cache_evict(User)
+  def delete_user(id) do
+    {id}
+    :ok
+  end
+
+  @decorate cache_evict(User)
+  def update_user(conds) do
+    {conds}
+    :ok
+  end
+
   @decorate cache_object(User)
   def get_user(conds) do
     {conds}
