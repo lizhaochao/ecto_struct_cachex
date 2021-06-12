@@ -68,7 +68,16 @@ defmodule ESC.LRU do
   end
 
   ### Implements Put
-  def add(obj, list), do: [obj | list]
-  def del_last(list, len, cap) when len == cap, do: Enum.reverse(tl(Enum.reverse(list)))
-  def del_last(list, _len, _cap), do: list
+  def add(obj, list), do: {nil, [obj | list]}
+
+  def del_last({_del_id, list}, len, cap) when len == cap do
+    with(
+      l = Enum.reverse(list),
+      %{id: del_id} = hd(l)
+    ) do
+      {del_id, Enum.reverse(tl(l))}
+    end
+  end
+
+  def del_last({_del_id, list}, _len, _cap), do: {nil, list}
 end

@@ -60,11 +60,15 @@ defmodule LRUTest do
   ### ### ### put
   test "put" do
     obj = %User{id: 199, name: "name199"}
-    assert [obj | @list] == LRU.put(@list, obj)
+    {del_id, list} = LRU.put(@list, obj)
+    assert nil == del_id
+    assert [obj | @list] == list
   end
 
   test "put - should remove last" do
     user_199 = %User{id: 199, name: "name199"}
-    assert [user_199, @user_1, @user_2, @user_3, @user_4] == LRU.put(@list, user_199, 5, 5)
+    {del_id, list} = LRU.put(@list, user_199, 5, 5)
+    assert 5 == del_id
+    assert [user_199, @user_1, @user_2, @user_3, @user_4] == list
   end
 end

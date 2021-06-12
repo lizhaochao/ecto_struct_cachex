@@ -48,7 +48,7 @@ defmodule ESC.Cache do
 
   def save_list(list, cached_obj, obj, len, cap, struct_name) do
     with(
-      list <- make_list(list, obj, cached_obj),
+      {_del_id, list} <- make_list(list, obj, cached_obj),
       len <- make_len(len, cap, cached_obj)
     ) do
       fn repo ->
@@ -62,7 +62,7 @@ defmodule ESC.Cache do
 
   def make_list(list, obj, cached_obj \\ nil)
   def make_list(list, obj, nil = _cached_obj), do: LRU.put(list, obj)
-  def make_list(list, _obj, _cached_obj), do: list
+  def make_list(list, _obj, _cached_obj), do: {nil, list}
 
   def make_len(len, cap, nil = _cached_obj) when len != cap, do: len + 1
   def make_len(len, _cap, _cached_obj), do: len
