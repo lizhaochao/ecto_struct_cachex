@@ -47,6 +47,8 @@ defmodule EctoStructCachex.MixProject do
 
   defp deps,
     do: [
+      {:decorator, "~> 1.4.0"},
+      # Dev and test dependencies
       {:excoveralls, "~> 0.14.0", only: :test},
       {:propcheck, "~> 1.4.0", only: :test},
       {:credo, "~> 1.5.5", only: [:dev, :test], runtime: false},

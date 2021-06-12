@@ -56,11 +56,15 @@
     ]
   },
   meta: %{
-    set: %{
-      User => #MapSet<[1, 2, 3]>,
-      Cargo => #MapSet<[4, 5, 6]>
+    ids: %{
+      User => [1, 2, 3],
+      Cargo => [4, 5, 6]
     },
-    size: %{
+    capacity: %{
+      User => 1,
+      Cargo => 2
+    },
+    len: %{
       User => 1,
       Cargo => 2
     },
@@ -84,5 +88,5 @@
 ```
 # >> KVRepo
 - sync_update
-- async_update
+- update (async)
 
