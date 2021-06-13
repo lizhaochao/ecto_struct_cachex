@@ -1,30 +1,14 @@
-# >> Frontend
-## 1. Use via decorator
-### 1.1 Define 2 functions
-- evict_objects() - update, delete
-
-args: 
-
-a. only pass schema name, must be the same as `__struct__`.
-
-b. wrapped function only support one arg, like keyword, map or value.
-
-### 1.2 Ensuring cache consistency
-### 1.3 Formatter
+## 1. pre check
+- only pass schema name, must be the same as `__struct__`.
+- wrapped function only support one arg, like keyword, map or value.
 - only accept/return `{:ok, struct}` or `{:ok, nil}`.
-### Notice
-- required `id` & `__meta__`  & `__struct__` keys with every map.
-- update, delete actions should delete themselves and related schemas.
-- get, create actions store object.  
-- suggest user store full object.
-
-# >> Hooks
+## 2. hooks
 - pre_hook
 - post_hook
-
-### Functionalities
-- TTL, second precision
-### Data Structure
+## 3. Functionalities
+- TTL, second precision.
+- delete all in table.
+## 4. Data Structure
 ```elixir
 %{
   db: %{
@@ -72,19 +56,3 @@ b. wrapped function only support one arg, like keyword, map or value.
   }
 }
 ```
-### Ecto Schema Meta
-```elixir
-%{
-  __struct__: Ecto.Schema.Metadata,
-  context: nil,
-  prefix: nil,
-  schema: User,
-  source: "user"
-  state: :loaded
-}
-```
-### config: only_test
-
-### delete all, table level
-
-
