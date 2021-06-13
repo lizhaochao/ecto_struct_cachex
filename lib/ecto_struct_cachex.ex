@@ -5,7 +5,7 @@ defmodule ESC do
 
   Download via [Gitee](https://gitee.com/lizhaochao/ecto_struct_cachex_sample) or [Github](https://github.com/lizhaochao/ecto_struct_cachex_sample).
 
-  ## Problem Solving
+  ## Problems Solving
 
   - **Support get struct by keyword from cache.**
 
