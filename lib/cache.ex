@@ -89,7 +89,7 @@ defmodule ESC.Cache do
   def save(struct_name, list, len, ids) do
     fn repo ->
       tables = make_tables(repo, ids, struct_name)
-      anti_refs = make_anti_refs(repo, ids, list)
+      back_refs = make_back_refs(repo, ids, list)
 
       new_repo =
         repo
@@ -97,7 +97,7 @@ defmodule ESC.Cache do
         |> put_in([:meta, :len, struct_name], len)
         |> put_in([:meta, :ids, struct_name], ids)
         |> put_in_if_not_nil([:meta, :tables], tables)
-        |> put_in_if_not_nil([:meta, :anti_refs], anti_refs)
+        |> put_in_if_not_nil([:meta, :back_refs], back_refs)
 
       {list, new_repo}
     end
@@ -124,16 +124,16 @@ defmodule ESC.Cache do
   def do_make_tables(tables, [_] = _ids, struct_name), do: put_if_not_exists(tables, struct_name)
   def do_make_tables(_tables, _ids, _struct_name), do: nil
 
-  def make_anti_refs(repo, ids, [obj | _] = _list), do: get_in(repo, [:meta, :anti_refs]) |> do_make_anti_refs(ids, obj)
-  def do_make_anti_refs(anti_refs, [_] = _ids, obj), do: Core.get_refs(obj) |> reduce_anti_refs(anti_refs)
-  def do_make_anti_refs(_anti_refs, _ids, _obj), do: nil
-  def reduce_anti_refs({:ok, {struct_name, refs}}, anti_refs) do
-    Enum.reduce(refs, anti_refs, fn ref, anti_refs ->
-      refs = Map.get(anti_refs, ref, %MapSet{}) |> MapSet.put(struct_name)
-      Map.put(anti_refs, ref, refs)
+  def make_back_refs(repo, ids, [obj | _] = _list), do: get_in(repo, [:meta, :back_refs]) |> do_make_back_refs(ids, obj)
+  def do_make_back_refs(back_refs, [_] = _ids, obj), do: Core.get_refs(obj) |> reduce_back_refs(back_refs)
+  def do_make_back_refs(_back_refs, _ids, _obj), do: nil
+  def reduce_back_refs({:ok, {struct_name, refs}}, back_refs) do
+    Enum.reduce(refs, back_refs, fn ref, back_refs ->
+      refs = Map.get(back_refs, ref, %MapSet{}) |> MapSet.put(struct_name)
+      Map.put(back_refs, ref, refs)
     end)
   end
-  def reduce_anti_refs(_other_refs, _anti_refs), do: nil
+  def reduce_back_refs(_other_refs, _back_refs), do: nil
 
   def put_in_if_not_nil(data, path, val), do: (val && put_in(data, path, val)) || data
   def put_if_not_exists(set, val), do: (val not in set && MapSet.put(set, val)) || nil

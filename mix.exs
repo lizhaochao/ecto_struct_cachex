@@ -1,12 +1,13 @@
 defmodule EctoStructCachex.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
   @description "in-memory cache for ecto struct."
 
   @gitee_repo_url "https://gitee.com/lizhaochao/ecto_struct_cachex"
   @github_repo_url "https://github.com/lizhaochao/ecto_struct_cachex"
 
-  @version "0.1.0"
+  @format_cmd "format --dot-formatter=.special_formatter.exs"
 
   def project do
     [
@@ -59,5 +60,5 @@ defmodule EctoStructCachex.MixProject do
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
-  defp aliases, do: [test: ["format", "test"], bench: ["format", "bench"]]
+  defp aliases, do: [test: [@format_cmd, "test"], bench: [@format_cmd, "bench"]]
 end
