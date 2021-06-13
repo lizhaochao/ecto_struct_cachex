@@ -42,8 +42,8 @@ defmodule API do
   end
 
   @decorate cache_evict(User)
-  def delete_user(id) do
-    {id}
+  def delete_user(conds_or_id) do
+    {conds_or_id}
     :ok
   end
 

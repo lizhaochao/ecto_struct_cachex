@@ -10,9 +10,11 @@ defmodule ESC.Decorator.CacheEvict do
           with(
             exec_block <- fn -> unquote(block) end,
             struct_name <- unquote(struct_name),
-            [conds_or_id] <- unquote(args_expr)
+            [conds_or_id | _] <- unquote(args_expr)
           ) do
             Cache.delete(struct_name, conds_or_id, exec_block)
+          else
+            _ -> :args_is_empty
           end
         end
       end

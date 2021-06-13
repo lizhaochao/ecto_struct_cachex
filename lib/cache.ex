@@ -6,10 +6,10 @@ defmodule ESC.Cache do
   ### Interface
   def get(struct_name, conds_or_id, exec_block) when is_atom(struct_name) do
     with(
-      {list, len, cap, ids} <- get_data(struct_name),
+      {list, len, ids, cap} <- get_data(struct_name),
       {cached_obj, list} <- get_obj(list, conds_or_id, len),
       {:ok, obj} <- exec_block_if_needed(cached_obj, exec_block),
-      [_ | _] <- save(struct_name, list, len, obj, cap, ids, cached_obj)
+      [_ | _] <- save(struct_name, list, len, ids, cap, obj, cached_obj)
     ) do
       {:ok, obj}
     else
@@ -20,9 +20,9 @@ defmodule ESC.Cache do
   def put(struct_name, exec_block) when is_atom(struct_name) do
     with(
       {:ok, %_{} = obj} <- exec_block.(),
-      {list, len, cap, ids} <- get_data(struct_name),
+      {list, len, ids, cap} <- get_data(struct_name),
       {list, len, ids} <- del_if_exists(list, len, obj, ids),
-      [_ | _] <- save(struct_name, list, len, obj, cap, ids)
+      [_ | _] <- save(struct_name, list, len, ids, cap, obj)
     ) do
       {:ok, obj}
     else
@@ -33,7 +33,10 @@ defmodule ESC.Cache do
   def delete(struct_name, conds_or_id, exec_block) when is_atom(struct_name) do
     with(
       :ok <- exec_block.(),
-      _ <- conds_or_id
+      {list, len, ids, _cap} <- get_data(struct_name),
+      {cached_obj, list} <- get_obj(list, conds_or_id, len),
+      {list, len, ids} <- del_if_exists(list, len, cached_obj, ids),
+      list when is_list(list) <- save_delete(struct_name, list, len, ids)
     ) do
       :ok
     else
@@ -42,15 +45,28 @@ defmodule ESC.Cache do
   end
 
   ### Implements
+  def save_delete(struct_name, list, len, ids) do
+    fn repo ->
+      new_repo =
+        repo
+        |> put_in([:db, struct_name], list)
+        |> put_in([:meta, :len, struct_name], len)
+        |> put_in([:meta, :ids, struct_name], ids)
+
+      {list, new_repo}
+    end
+    |> Repo.sync_update()
+  end
+
   def get_data(struct_name) do
     default_cap = Config.get_default_capacity()
 
     fn repo ->
       list = get_in(repo, [:db, struct_name]) || []
       len = get_in(repo, [:meta, :len, struct_name]) || 0
-      cap = get_in(repo, [:meta, :capacity, struct_name]) || default_cap
       ids = get_in(repo, [:meta, :ids, struct_name]) || []
-      {{list, len, cap, ids}, repo}
+      cap = get_in(repo, [:meta, :capacity, struct_name]) || default_cap
+      {{list, len, ids, cap}, repo}
     end
     |> Repo.get()
   end
@@ -61,6 +77,7 @@ defmodule ESC.Cache do
   def exec_block_if_needed(nil = _obj, exec_block), do: exec_block.()
   def exec_block_if_needed(%_{} = obj, _exec_block), do: {:ok, obj}
 
+  def del_if_exists(list, len, nil = _obj, ids), do: {list, len, ids}
   def del_if_exists(list, len, %{id: id} = _obj, ids) do
     ids
     |> ESCList.exists?(id)
@@ -76,7 +93,7 @@ defmodule ESC.Cache do
     )
   end
 
-  def save(struct_name, list, len, obj, cap, ids, cached_obj \\ nil) do
+  def save(struct_name, list, len, ids, cap, obj, cached_obj \\ nil) do
     with(
       %{id: id} <- obj,
       {del_id, list} <- make_list(list, obj, len, cap, cached_obj),
