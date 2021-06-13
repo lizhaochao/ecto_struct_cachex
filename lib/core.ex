@@ -17,6 +17,46 @@ defmodule ESC.Core do
       when is_list(list) and is_list(conds) and is_integer(len) and len >= 0,
       do: list |> del_by_conds(conds) |> make_del_result(list, len)
 
+  def get_refs(obj) do
+    with(
+      {:ok, _} <- Map.fetch(obj, :__struct__),
+      refs <- drill_down(obj)
+    ) do
+      refs
+    else
+      :error -> :obj_is_not_struct
+    end
+  end
+
+  ### Implements Get Refs
+  def drill_down(obj), do: do_drill_down(MapSet.new(), Map.values(obj))
+
+  def do_drill_down(refs, []), do: refs
+
+  def do_drill_down(refs, [val | rest]) when is_list(val) do
+    Enum.reduce(val, MapSet.new(), fn obj, acc_refs ->
+      refs = getput_struct_name(refs, obj)
+      obj |> drill_down() |> MapSet.union(acc_refs) |> MapSet.union(refs)
+    end)
+    |> MapSet.union(refs)
+    |> do_drill_down(rest)
+  end
+
+  def do_drill_down(refs, [%{} = val | rest]) do
+    new_refs = getput_struct_name(refs, val)
+    val |> drill_down() |> MapSet.union(new_refs) |> do_drill_down(rest)
+  end
+
+  def do_drill_down(refs, [_val | rest]), do: do_drill_down(refs, rest)
+
+  def getput_struct_name(refs, val) do
+    Map.fetch(val, :__struct__)
+    |> case do
+      {:ok, struct_name} -> MapSet.put(refs, struct_name)
+      _ -> refs
+    end
+  end
+
   ### Implements Delete
   def del_by_conds([] = _list, _conds), do: @del_recursive_init_data
   def del_by_conds(list, conds), do: do_del_by_conds(list, conds, @del_recursive_init_data)

@@ -75,4 +75,26 @@ defmodule CoreTest do
       assert [] == Core.delete([], [name: "same_n"], @list_len)
     end
   end
+
+  describe "get_refs/1" do
+    test "map" do
+      assert MapSet.new([Parent]) == Core.get_refs(@user_3)
+    end
+
+    test "nested map" do
+      assert MapSet.new([Parent, Child]) == Core.get_refs(@user_1)
+    end
+
+    test "list" do
+      assert MapSet.new([Parent, Child]) == Core.get_refs(@user_2)
+    end
+
+    test "no refs" do
+      assert %MapSet{} == Core.get_refs(%Role{id: 1, name: "role name"})
+    end
+
+    test "error" do
+      assert :obj_is_not_struct == Core.get_refs(%{id: 1, name: "name"})
+    end
+  end
 end

@@ -124,6 +124,9 @@ defmodule ESC.Cache do
   def do_make_tables(tables, [_] = _ids, struct_name), do: put_if_not_exists(tables, struct_name)
   def do_make_tables(_tables, _ids, _struct_name), do: nil
 
+  def make_anti_refs() do
+  end
+
   def put_in_if_not_nil(data, path, val), do: (val && put_in(data, path, val)) || data
   def put_if_not_exists(set, val), do: (val not in set && MapSet.put(set, val)) || nil
 end

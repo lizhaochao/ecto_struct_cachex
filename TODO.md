@@ -57,7 +57,7 @@
     ]
   },
   meta: %{
-    refs: %{
+    anti_refs: %{
       Role => #MapSet<[User, Institution]>,
       House => #MapSet<[User]>
     }
