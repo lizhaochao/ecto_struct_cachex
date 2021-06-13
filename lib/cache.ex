@@ -7,10 +7,10 @@ defmodule ESC.Cache do
   def get(struct_name, conds_or_id, exec_block) when is_atom(struct_name) do
     with(
       default_capacity <- Config.get_default_capacity(),
-      {list, len, cap, ids} <- get_data(struct_name, default_capacity),
+      {list, len, cap, ids, tables} <- get_data(struct_name, default_capacity),
       {cached_obj, list} <- get_obj(list, conds_or_id, len),
       {:ok, obj} <- exec_block_if_needed(cached_obj, exec_block),
-      [_ | _] <- save(struct_name, list, len, obj, cap, ids, cached_obj)
+      [_ | _] <- save(struct_name, list, len, obj, cap, ids, tables, cached_obj)
     ) do
       {:ok, obj}
     else
@@ -22,9 +22,9 @@ defmodule ESC.Cache do
     with(
       {:ok, %_{} = obj} <- exec_block.(),
       default_capacity <- Config.get_default_capacity(),
-      {list, len, cap, ids} <- get_data(struct_name, default_capacity),
+      {list, len, cap, ids, tables} <- get_data(struct_name, default_capacity),
       {list, len, ids} <- del_if_exists(list, len, obj, ids),
-      [_ | _] <- save(struct_name, list, len, obj, cap, ids)
+      [_ | _] <- save(struct_name, list, len, obj, cap, ids, tables)
     ) do
       {:ok, obj}
     else
@@ -50,7 +50,8 @@ defmodule ESC.Cache do
       len = get_in(repo, [:meta, :len, struct_name]) || 0
       cap = get_in(repo, [:meta, :capacity, struct_name]) || default_capacity
       ids = get_in(repo, [:meta, :ids, struct_name]) || []
-      {{list, len, cap, ids}, repo}
+      tables = get_in(repo, [:meta, :tables])
+      {{list, len, cap, ids, tables}, repo}
     end
     |> Repo.get()
   end
@@ -76,24 +77,26 @@ defmodule ESC.Cache do
     )
   end
 
-  def save(struct_name, list, len, obj, cap, ids, cached_obj \\ nil) do
+  def save(struct_name, list, len, obj, cap, ids, tables, cached_obj \\ nil) do
     with(
       %{id: id} <- obj,
       {del_id, list} <- make_list(list, obj, len, cap, cached_obj),
       ids <- make_ids(ids, id, del_id, cached_obj),
-      len <- make_len(len, cap, cached_obj)
+      len <- make_len(len, cap, cached_obj),
+      tables <- make_tables(tables, ids, struct_name)
     ) do
-      save(struct_name, list, len, ids)
+      save(struct_name, list, len, ids, tables)
     end
   end
 
-  def save(struct_name, list, len, ids) do
+  def save(struct_name, list, len, ids, tables) do
     fn repo ->
       new_repo =
         repo
         |> put_in([:db, struct_name], list)
         |> put_in([:meta, :len, struct_name], len)
         |> put_in([:meta, :ids, struct_name], ids)
+        |> put_in_if_not_nil([:meta, :tables], tables)
 
       {list, new_repo}
     end
@@ -105,12 +108,18 @@ defmodule ESC.Cache do
   def make_list(list, _obj, _len, _cap, _cached_obj), do: {nil, list}
 
   def make_ids(ids, id, del_id, cached_obj), do: ids |> add_id(id, cached_obj) |> del_id(del_id)
-  def del_id(ids, nil = _id), do: ids
-  def del_id(ids, id), do: ESCList.del(ids, id)
   def add_id(ids, id, nil = _cached_obj), do: ESCList.radd(ids, id)
   def add_id(ids, _id, _cached_obj), do: ids
+  def del_id(ids, nil = _id), do: ids
+  def del_id(ids, id), do: ESCList.del(ids, id)
 
   def make_len(len, cap, cached_obj \\ nil)
   def make_len(len, cap, nil = _cached_obj) when len != cap, do: len + 1
   def make_len(len, _cap, _cached_obj), do: len
+
+  def make_tables(tables, [_] = _ids, struct_name), do: put_if_not_exists(tables, struct_name)
+  def make_tables(_tables, _ids, _struct_name), do: nil
+
+  def put_in_if_not_nil(data, path, val), do: (val && put_in(data, path, val)) || data
+  def put_if_not_exists(set, val), do: (val not in set && MapSet.put(set, val)) || nil
 end

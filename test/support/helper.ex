@@ -33,6 +33,13 @@ defmodule API do
     {:ok, user}
   end
 
+  @decorate cache_put(Role)
+  def create_role(id, name) do
+    {id, name}
+    role = Helper.make_role()
+    {:ok, role}
+  end
+
   @decorate cache_evict(User)
   def delete_user(id) do
     {id}

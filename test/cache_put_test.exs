@@ -13,11 +13,11 @@ defmodule CachePutTest do
 
   test "create ok" do
     ## first get
-    {:ok, %User{id: uid1, role: %Role{id: rid1}}} = API.create_user(1, "name1")
+    {:ok, %User{id: uid1, role: %Role{id: rid1}}} = API.create_user(@unused_id, @unused_name)
     assert_meta(User, 1)
 
     ## second get
-    {:ok, %User{id: uid2, role: %Role{id: rid2}}} = API.create_user(2, "name2")
+    {:ok, %User{id: uid2, role: %Role{id: rid2}}} = API.create_user(@unused_id, @unused_name)
     assert_meta(User, 2)
 
     ## verify
@@ -27,9 +27,7 @@ defmodule CachePutTest do
     ## n times create
     1..3
     |> Enum.each(fn x ->
-      fake_id = 3
-      fake_name = "name3"
-      {:ok, %User{role: %Role{}}} = API.create_user(fake_id, fake_name)
+      {:ok, %User{role: %Role{}}} = API.create_user(@unused_id, @unused_name)
       assert_meta(User, 2 + x)
     end)
 
@@ -57,6 +55,20 @@ defmodule CachePutTest do
       {:ok, %User{role: %Role{}}} = API.create_user(@unused_id, @unused_name)
       assert_meta(User, capacity)
     end)
+  end
+
+  test "meta tables" do
+    1..3
+    |> Enum.each(fn _ ->
+      {:ok, %User{id: uid1, role: %Role{}}} = API.create_user(@unused_id, @unused_name)
+      {:ok, %User{role: %Role{}}} = API.get_user(id: uid1)
+      {:ok, %Role{id: rid1}} = API.create_role(@unused_id, @unused_name)
+      {:ok, %Role{}} = API.get_role_by_id(rid1)
+    end)
+
+    repo = Repo.get_all()
+    tables = get_in(repo, [:meta, :tables])
+    assert 2 == length(MapSet.to_list(tables))
   end
 
   def assert_meta(module, expected_len) do
