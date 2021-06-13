@@ -7,7 +7,7 @@
 - post_hook
 ## 3. Functionalities
 - TTL, second precision.
-- delete all in table.
+- provide esc_drop, esc_truncate functions.
 ## 4. Data Structure
 ```elixir
 %{
