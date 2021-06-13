@@ -4,7 +4,7 @@ in-memory cache for ecto struct.
 Add ecto_struct_cachex to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
-  [{:ecto_struct_cachex, "~> 0.1.0"}]
+  [{:ecto_struct_cachex, "~> 0.2.0"}]
 end
 ```
 run `mix deps.get`.
