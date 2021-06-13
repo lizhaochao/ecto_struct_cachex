@@ -20,7 +20,7 @@ defmodule ESC.KVRepo.Server do
   @init_repo %{
     db: %{},
     meta: %{
-      tables: MapSet.new(),
+      tables: %MapSet{},
       back_refs: %{},
       ids: %{},
       capacity: %{},

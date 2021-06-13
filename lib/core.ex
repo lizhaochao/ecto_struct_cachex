@@ -29,12 +29,12 @@ defmodule ESC.Core do
   end
 
   ### Implements Get Refs
-  def drill_down(obj), do: do_drill_down(MapSet.new(), Map.values(obj))
+  def drill_down(obj), do: do_drill_down(%MapSet{}, Map.values(obj))
 
   def do_drill_down(refs, []), do: refs
 
   def do_drill_down(refs, [val | rest]) when is_list(val) do
-    Enum.reduce(val, MapSet.new(), fn obj, acc_refs ->
+    Enum.reduce(val, %MapSet{}, fn obj, acc_refs ->
       refs = getput_struct_name(refs, obj)
       obj |> drill_down() |> MapSet.union(acc_refs) |> MapSet.union(refs)
     end)
