@@ -57,6 +57,10 @@
     ]
   },
   meta: %{
+    refs: %{
+      Role => #MapSet<[User, Institution]>,
+      House => #MapSet<[User]>
+    }
     ids: %{
       User => [1, 2, 3],
       Cargo => [4, 5, 6]
@@ -69,9 +73,15 @@
       User => 1,
       Cargo => 2
     },
+    tables: #MapSet<[User, Role]>,
     gc: %{
-      User => %{counts: %{}, shards: %{}, secs: MapSet.new()},
-      Cargo => %{counts: %{}, shards: %{}, secs: MapSet.new()}
+      counts: %{1_623_400_888 => 12}, 
+      shards: %{
+        1_623_400_888 => %{
+          User => #MapSet<[1,2,3,4]>,
+          Role => #MapSet<[5,6,7,8]>
+        }
+      }
     }
   }
 }
@@ -91,6 +101,4 @@
 - sync_update
 - update (async)
 
-###
-1. store capacity which is from use config.  ESC.Cache
-2. 
+### todo list

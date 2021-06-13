@@ -17,7 +17,20 @@ defmodule ESC.KVRepo.Server do
 
   use GenServer
 
-  @init_repo %{db: %{}, meta: %{ids: %{}, capacity: %{}, len: %{}, gc: %{}}}
+  @init_repo %{
+    db: %{},
+    meta: %{
+      tables: MapSet.new(),
+      refs: %{},
+      ids: %{},
+      capacity: %{},
+      len: %{},
+      gc: %{
+        counts: %{},
+        shards: %{}
+      }
+    }
+  }
 
   def start_link(opts) when is_list(opts) do
     with(
