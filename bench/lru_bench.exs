@@ -2,7 +2,7 @@ defmodule User do
   defstruct [:id, :name]
 end
 
-defmodule LURBench do
+defmodule LRUBench do
   use Benchfella
 
   @lru_list [

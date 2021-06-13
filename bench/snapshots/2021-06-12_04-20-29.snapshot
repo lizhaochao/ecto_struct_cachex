@@ -1,5 +1,5 @@
 duration:1.0;mem stats:false;sys mem stats:false
-## LURBench
+## LRUBench
 benchmark name                  iterations   average time
 only put                         100000000   0.09 µs/op
 get - empty cond                  10000000   0.15 µs/op
