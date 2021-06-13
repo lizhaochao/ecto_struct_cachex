@@ -10,14 +10,12 @@ defmodule CacheObjectTest do
 
   test "get by conds ok" do
     ## first get
-    {:ok, %User{id: uid1, name: _, role: %Role{id: rid1, name: _}}} =
-      API.get_user(name: "not_exists_n1")
+    {:ok, %User{id: uid1, name: _, role: %Role{id: rid1, name: _}}} = API.get_user(name: "not_exists_n1")
 
     assert_meta(User, 1)
 
     ## second get
-    {:ok, %User{id: uid2, name: _, role: %Role{id: rid2, name: _}}} =
-      API.get_user(name: "not_exists_n2")
+    {:ok, %User{id: uid2, name: _, role: %Role{id: rid2, name: _}}} = API.get_user(name: "not_exists_n2")
 
     assert_meta(User, 2)
 

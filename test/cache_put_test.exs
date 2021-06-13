@@ -71,6 +71,27 @@ defmodule CachePutTest do
     assert 2 == length(MapSet.to_list(tables))
   end
 
+  test "meta anti_refs" do
+    1..3
+    |> Enum.each(fn _ ->
+      {:ok, %User{role: %Role{}}} = API.create_user(@unused_id, @unused_name)
+      {:ok, %User{role: %Role{}}} = API.get_user(id: @unused_id)
+      {:ok, %Role{}} = API.create_role(@unused_id, @unused_name)
+      {:ok, %Role{}} = API.get_role_by_id(@unused_id)
+    end)
+
+    repo = Repo.get_all()
+    anti_refs = get_in(repo, [:meta, :anti_refs])
+
+    expected = %{
+      Child => MapSet.new([Role, User]),
+      Parent => MapSet.new([User]),
+      Role => MapSet.new([User])
+    }
+
+    assert expected == anti_refs
+  end
+
   def assert_meta(module, expected_len) do
     repo = Repo.get_all()
     list = get_in(repo, [:db, module])

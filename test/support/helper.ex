@@ -7,13 +7,14 @@ defmodule Helper do
     %User{
       id: user_id,
       name: "u_name#{user_id}",
-      role: %Role{id: role_id, name: "r_name#{role_id}"}
+      role: %Role{id: role_id, name: "r_name#{role_id}"},
+      parent: %Parent{id: 1, name: "parent", child: %Child{id: 2}}
     }
   end
 
   def make_role do
     role_id = System.unique_integer([:positive])
-    %Role{id: role_id, name: "r_name#{role_id}"}
+    %Role{id: role_id, name: "r_name#{role_id}", child: %Child{id: 2}}
   end
 end
 

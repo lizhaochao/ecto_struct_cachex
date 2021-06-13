@@ -21,7 +21,7 @@ defmodule ESC.KVRepo.Server do
     db: %{},
     meta: %{
       tables: MapSet.new(),
-      refs: %{},
+      anti_refs: %{},
       ids: %{},
       capacity: %{},
       len: %{},

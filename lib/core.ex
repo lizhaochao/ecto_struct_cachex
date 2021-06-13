@@ -19,10 +19,10 @@ defmodule ESC.Core do
 
   def get_refs(obj) do
     with(
-      {:ok, _} <- Map.fetch(obj, :__struct__),
+      {:ok, struct_name} <- Map.fetch(obj, :__struct__),
       refs <- drill_down(obj)
     ) do
-      refs
+      {:ok, {struct_name, refs}}
     else
       :error -> :obj_is_not_struct
     end

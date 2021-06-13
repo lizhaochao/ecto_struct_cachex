@@ -1,11 +1,11 @@
 defmodule User do
   @moduledoc false
-  defstruct([:id, :name, :role])
+  defstruct([:id, :name, :role, :parent])
 end
 
 defmodule Role do
   @moduledoc false
-  defstruct([:id, :name])
+  defstruct([:id, :name, :child])
 end
 
 defmodule Parent do
