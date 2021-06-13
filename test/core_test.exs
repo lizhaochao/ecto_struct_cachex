@@ -67,6 +67,10 @@ defmodule CoreTest do
       assert [@user_2, @user_3, @user_4, @user_5] == Core.delete(@list, [id: 1], @list_len)
     end
 
+    test "by conds - not exists id" do
+      assert [@user_1, @user_2, @user_3, @user_4, @user_5] == Core.delete(@list, [id: 999], @list_len)
+    end
+
     test "by conds - del two" do
       assert [@user_1, @user_2, @user_3] == Core.delete(@list, [name: "same_n"], @list_len)
     end
