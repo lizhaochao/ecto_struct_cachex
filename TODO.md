@@ -1,15 +1,13 @@
 # >> Frontend
 ## 1. Use via decorator
 ### 1.1 Define 2 functions
-- cache_object() - get
-- cache_put() - create
 - evict_objects() - update, delete
 
-  args: 
+args: 
 
-  a. only pass schema name, must be the same as `__struct__`.
+a. only pass schema name, must be the same as `__struct__`.
 
-  b. wrapped function only support one arg, like keyword, map or value.
+b. wrapped function only support one arg, like keyword, map or value.
 
 ### 1.2 Ensuring cache consistency
 ### 1.3 Formatter
@@ -24,20 +22,8 @@
 - pre_hook
 - post_hook
 
-# >> Repo
-- store to repo if not exists
-  - create
-  - get
-- delete related records
-  - update
-  - delete
 ### Functionalities
-
-- LRU
-  - unlimited
-  - set size
 - TTL, second precision
-
 ### Data Structure
 ```elixir
 %{
@@ -97,8 +83,6 @@
   state: :loaded
 }
 ```
-# >> KVRepo
-- sync_update
-- update (async)
 
-### todo list
+
+### config: only_test
