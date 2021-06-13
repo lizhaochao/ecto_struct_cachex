@@ -22,39 +22,57 @@ defmodule CoreTest do
   ###
   describe "delete_by_struct" do
     test "del one - deep 2 level map" do
-      assert [@user_2, @user_3, @user_4, @user_5] == Core.delete_by_struct(@list, Child, 1)
+      {del_ids, list} = Core.delete_by_struct(@list, Child, 1)
+      assert [@user_2, @user_3, @user_4, @user_5] == list
+      assert [1] == del_ids
     end
 
     test "del one - deep 2 level list" do
-      assert [@user_1, @user_3, @user_4, @user_5] == Core.delete_by_struct(@list, Child, 2)
+      {del_ids, list} = Core.delete_by_struct(@list, Child, 2)
+      assert [@user_1, @user_3, @user_4, @user_5] == list
+      assert [2] == del_ids
     end
 
     test "del one - map" do
-      assert [@user_2, @user_3, @user_4, @user_5] == Core.delete_by_struct(@list, Parent, 1)
+      {del_ids, list} = Core.delete_by_struct(@list, Parent, 1)
+      assert [@user_2, @user_3, @user_4, @user_5] == list
+      assert [1] == del_ids
     end
 
     test "del two - map" do
-      assert [@user_1, @user_2, @user_3] == Core.delete_by_struct(@list, Parent, 4)
+      {del_ids, list} = Core.delete_by_struct(@list, Parent, 4)
+      assert [@user_1, @user_2, @user_3] == list
+      assert [5, 4] == del_ids
     end
 
     test "del one - in list" do
-      assert [@user_1, @user_3, @user_4, @user_5] == Core.delete_by_struct(@list, Parent, 2)
+      {del_ids, list} = Core.delete_by_struct(@list, Parent, 2)
+      assert [@user_1, @user_3, @user_4, @user_5] == list
+      assert [2] == del_ids
     end
 
     test "del two - mixed map & list" do
-      assert [@user_1, @user_4, @user_5] == Core.delete_by_struct(@list, Parent, 3)
+      {del_ids, list} = Core.delete_by_struct(@list, Parent, 3)
+      assert [@user_1, @user_4, @user_5] == list
+      assert [3, 2] == del_ids
     end
 
     test "del nothing - 1 level" do
-      assert @list == Core.delete_by_struct(@list, Parent, 99)
+      {del_ids, list} = Core.delete_by_struct(@list, Parent, 99)
+      assert @list == list
+      assert [] == del_ids
     end
 
     test "del nothing - deep 2 level" do
-      assert @list == Core.delete_by_struct(@list, Child, 99)
+      {del_ids, list} = Core.delete_by_struct(@list, Child, 99)
+      assert @list == list
+      assert [] == del_ids
     end
 
     test "del nothing - unknown struct" do
-      assert @list == Core.delete_by_struct(@list, Unknown, 99)
+      {del_ids, list} = Core.delete_by_struct(@list, Unknown, 99)
+      assert @list == list
+      assert [] == del_ids
     end
   end
 

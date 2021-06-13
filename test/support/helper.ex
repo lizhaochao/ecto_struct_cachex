@@ -53,6 +53,18 @@ defmodule API do
     :ok
   end
 
+  @decorate cache_evict(Role)
+  def delete_role(conds_or_id) do
+    {conds_or_id}
+    :ok
+  end
+
+  @decorate cache_evict(Role)
+  def update_role(conds) do
+    {conds}
+    :ok
+  end
+
   @decorate cache_object(User)
   def get_user(conds) do
     {conds}

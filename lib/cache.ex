@@ -36,7 +36,7 @@ defmodule ESC.Cache do
       {list, len, ids, _cap} <- get_data(struct_name),
       {cached_obj, list} <- get_obj(list, conds_or_id, len),
       {list, len, ids} <- del_if_exists(list, len, cached_obj, ids),
-      list when is_list(list) <- save_delete(struct_name, list, len, ids)
+      list when is_list(list) <- save_delete(list, len, ids, struct_name, conds_or_id)
     ) do
       :ok
     else
@@ -45,19 +45,54 @@ defmodule ESC.Cache do
   end
 
   ### Implements
-  def save_delete(struct_name, list, len, ids) do
+  def save_delete(list, len, ids, struct_name, struct_id) do
     fn repo ->
       new_repo =
         repo
-        |> put_in([:db, struct_name], list)
-        |> put_in([:meta, :len, struct_name], len)
-        |> put_in([:meta, :ids, struct_name], ids)
+        |> delete_table_data(struct_name, struct_id)
+        |> Enum.concat([{struct_name, list, len, ids}])
+        |> Enum.reduce(repo, fn {name, list, len, ids}, repo ->
+          repo
+          |> put_in([:db, name], list)
+          |> put_in([:meta, :len, name], len)
+          |> put_in([:meta, :ids, name], ids)
+        end)
 
       {list, new_repo}
     end
     |> Repo.sync_update()
   end
+  def delete_table_data(repo, struct_name, struct_id) do
+    with(
+      back_refs when not is_nil(back_refs) <- get_in(repo, [:meta, :back_refs, struct_name]),
+      tables <- MapSet.to_list(back_refs),
+      table_data <- Map.get(repo, :db) |> Map.take(tables)
+    ) do
+      Enum.map(tables, fn table ->
+        Map.get(table_data, table, [])
+        |> delete_by_struct(table, struct_name, struct_id, repo)
+      end)
+    else
+      _ -> []
+    end
+  end
+  def delete_by_struct(list, table, struct_name, struct_id, repo) do
+    with(
+      {del_ids, new_list} <- Core.delete_by_struct(list, struct_name, struct_id),
+      #
+      del_len <- length(del_ids),
+      len <- get_in(repo, [:meta, :len, table]) || 0,
+      len <- len - del_len,
+      new_len <- if(len < 0, do: 0, else: len),
+      #
+      ids <- get_in(repo, [:meta, :ids, table]) || [],
+      new_ids <- if(ids == [], do: [], else: ids -- del_ids)
+    ) do
+      {table, new_list, new_len, new_ids}
+    end
+  end
 
+  #
   def get_data(struct_name) do
     default_cap = Config.get_default_capacity()
 

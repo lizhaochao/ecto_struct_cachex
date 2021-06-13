@@ -46,11 +46,29 @@ defmodule CacheEvictTest do
     end)
   end
 
+  test "delete back data" do
+    assert_meta(Role, 0)
+    assert_meta(User, 0)
+
+    1..3
+    |> Enum.map(fn n ->
+      {:ok, %User{role: %Role{id: rid}}} = API.create_user(@unused_id, @unused_name)
+      assert_meta(User, n)
+      rid
+    end)
+    |> Enum.each(fn rid ->
+      :ok = API.delete_role(rid)
+    end)
+
+    assert_meta(Role, 0)
+    assert_meta(User, 0)
+  end
+
   def assert_meta(module, expected_len) do
     repo = Repo.get_all()
-    list = get_in(repo, [:db, module])
-    ids = get_in(repo, [:meta, :ids, module])
-    len = get_in(repo, [:meta, :len, module])
+    list = get_in(repo, [:db, module]) || []
+    ids = get_in(repo, [:meta, :ids, module]) || []
+    len = get_in(repo, [:meta, :len, module]) || 0
     assert expected_len == length(ids)
     assert expected_len == length(list)
     assert expected_len == len
