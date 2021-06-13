@@ -11,7 +11,7 @@ defmodule ESC.Decorator.CacheObject do
             false = _disable <- Config.get_disable(),
             exec_block <- fn -> unquote(block) end,
             struct_name <- unquote(struct_name),
-            [conds_or_id] <- unquote(args_expr)
+            [conds_or_id | _] <- unquote(args_expr)
           ) do
             Cache.get(struct_name, conds_or_id, exec_block)
           else

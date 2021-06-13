@@ -1,6 +1,6 @@
 ## 1. pre check
 - only pass schema name, must be the same as `__struct__`.
-- wrapped function only support one arg, like keyword, map or value.
+- wrapped function first arg should be keyword, map or value.
 - only accept/return `{:ok, struct}` or `{:ok, nil}`.
 ## 2. hooks
 - pre_hook
