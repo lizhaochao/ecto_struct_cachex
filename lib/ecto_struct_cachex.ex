@@ -7,34 +7,51 @@ defmodule ESC do
 
   ## Problems Solving
 
-  - **Support get struct by keyword from cache.**
+  - **Support getting struct by keyword from cache.**
 
   ```elixir
+  # define Cache by using ESC (ecto_struct_cachex)
+  defmodule ObjectCache do
+    use ESC
+  end
+
+  # use ObjectCache to inject cache_object/1, cache_put/1, cache_evict/1 decorators.
   defmodule API do
+    use ObjectCache
     @decorate cache_object(User)
     def get_user(conds) do
       ...
       {:ok, user}
     end
   end
+  
   # pass keyword to get object.
   API.get_user([name: "name", addr: "addr"])
   ```
+
   -  **Delete dirty structs when its deep nested struct updated/deleted.**
 
   ```elixir
-  %User{
-    id: 1,
-    user_name: "u_name",
-    role: %Role{id: 2, role_name: "r_name"}
+  %{
+    User => [
+      %User{
+        id: 1,
+        user_name: "u_name",
+        role: %Role{id: 2, role_name: "r_name2"}
+      },
+    ],
+    Role => [
+      %Role{id: 1, role_name: "r_name1"},
+      %Role{id: 2, role_name: "r_name2"}
+    ]
   }
   ```
-  For above sample struct, role struct deleted/upadted, user struct will be deleted too.
+  For above sample data, **role** `id=2`  struct deleted/updated, **user** `id=1` struct will be deleted too.
 
-  ## Benchmark
+  ## Cache based on LRU algorithm.
+  ### Benchmark
   ```bash
   mix bench
-  ## LRUBench
   benchmark name                  iterations   average time
   only put                         100000000   0.09 µs/op
   get - empty cond                  10000000   0.15 µs/op

@@ -1,7 +1,7 @@
 defmodule EctoStructCachex.MixProject do
   use Mix.Project
 
-  @version "0.2.1"
+  @version "0.2.2"
   @description "in-memory cache for ecto struct."
 
   @gitee_repo_url "https://gitee.com/lizhaochao/ecto_struct_cachex"
@@ -28,7 +28,7 @@ defmodule EctoStructCachex.MixProject do
 
       # Docs
       name: "ecto_struct_cachex",
-      docs: [main: "ecto_struct_cachex"]
+      docs: [main: "ESC"]
     ]
   end
 
