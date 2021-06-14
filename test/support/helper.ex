@@ -65,14 +65,14 @@ defmodule API do
     :ok
   end
 
-  @decorate cache_object(User)
+  @decorate cache_struct(User)
   def get_user(conds) do
     {conds}
     user = Helper.make_user()
     {:ok, user}
   end
 
-  @decorate cache_object(Role)
+  @decorate cache_struct(Role)
   def get_role_by_id(id) do
     {id}
     user = Helper.make_role()

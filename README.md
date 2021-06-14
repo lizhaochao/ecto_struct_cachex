@@ -20,14 +20,14 @@ Download via [Gitee](https://gitee.com/lizhaochao/ecto_struct_cachex_sample) or 
 
 ```elixir
 # define Cache by using ESC (ecto_struct_cachex)
-defmodule ObjectCache do
+defmodule StructCache do
   use ESC
 end
 
-# use ObjectCache to inject cache_object/1, cache_put/1, cache_evict/1 decorators.
+# use StructCache to inject cache_struct/1, cache_put/1, cache_evict/1 decorators.
 defmodule API do
-  use ObjectCache
-  @decorate cache_object(User)
+  use StructCache
+  @decorate cache_struct(User)
   def get_user(conds) do
     ...
     {:ok, user}

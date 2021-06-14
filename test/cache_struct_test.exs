@@ -1,4 +1,4 @@
-defmodule CacheObjectTest do
+defmodule CacheStructTest do
   use ExUnit.Case
 
   alias ESC.Repo

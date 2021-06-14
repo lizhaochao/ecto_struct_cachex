@@ -11,14 +11,14 @@ defmodule ESC do
 
   ```elixir
   # define Cache by using ESC (ecto_struct_cachex)
-  defmodule ObjectCache do
+  defmodule StructCache do
     use ESC
   end
 
-  # use ObjectCache to inject cache_object/1, cache_put/1, cache_evict/1 decorators.
+  # use StructCache to inject cache_struct/1, cache_put/1, cache_evict/1 decorators.
   defmodule API do
-    use ObjectCache
-    @decorate cache_object(User)
+    use StructCache
+    @decorate cache_struct(User)
     def get_user(conds) do
       ...
       {:ok, user}
@@ -65,8 +65,8 @@ defmodule ESC do
 
   defmacro __using__(opts) do
     quote do
-      use Decorator.Define, cache_object: 1, cache_put: 1, cache_evict: 1
-      use ESC.Decorator.CacheObject, unquote(opts)
+      use Decorator.Define, cache_struct: 1, cache_put: 1, cache_evict: 1
+      use ESC.Decorator.CacheStruct, unquote(opts)
       use ESC.Decorator.CachePut, unquote(opts)
       use ESC.Decorator.CacheEvict, unquote(opts)
     end
