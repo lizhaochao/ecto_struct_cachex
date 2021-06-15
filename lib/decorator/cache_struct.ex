@@ -6,8 +6,6 @@ defmodule ESC.Decorator.CacheStruct do
   defmacro __using__(_opts) do
     quote do
       def cache_struct(struct_name, block, %Decorator.Decorate.Context{args: args_expr} = ctx) do
-        impl_m = __MODULE__
-
         quote do
           with(
             false = _disable <- Config.get_disable(),
@@ -19,7 +17,7 @@ defmodule ESC.Decorator.CacheStruct do
           else
             true -> unquote(block)
           end
-          |> Hook.post_hook(unquote(impl_m))
+          |> Hook.post_hook(__MODULE__)
         end
       end
     end

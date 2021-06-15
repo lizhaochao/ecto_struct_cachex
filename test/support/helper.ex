@@ -21,13 +21,13 @@ end
 defmodule CacheDecorator do
   @moduledoc false
   use ESC
-
-  def post_hook(resp), do: resp
 end
 
 defmodule API do
   @moduledoc false
   use CacheDecorator
+
+  def post_hook(resp), do: resp
 
   @decorate cache_put(User)
   def create_user(id, name) do
