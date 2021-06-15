@@ -47,7 +47,7 @@ API.get_user([name: "name", addr: "addr"])
       id: 1, 
       user_name: "u_name", 
       role: %Role{id: 2, role_name: "r_name2"}
-    },
+    }
   ],
   Role => [
     %Role{id: 1, role_name: "r_name1"},
