@@ -13,6 +13,8 @@ defmodule ESC do
   # define Cache by using ESC (ecto_struct_cachex)
   defmodule StructCache do
     use ESC
+    # reformat resp by post_hook callback.
+    def post_hook(resp), do: resp
   end
 
   # use StructCache to inject cache_struct/1, cache_put/1, cache_evict/1 decorators.

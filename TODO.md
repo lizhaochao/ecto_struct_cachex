@@ -2,13 +2,10 @@
 - only pass schema name, must be the same as `__struct__`.
 - wrapped function first arg should be keyword, map or value.
 - only accept/return `{:ok, struct}` or `{:ok, nil}`.
-## 2. hooks
-- pre_hook
-- post_hook
-## 3. Functionalities
+## 2. Functionalities
 - TTL, second precision.
 - provide esc_drop, esc_truncate functions.
-## 4. Data Structure
+## 3. Data Structure
 ```elixir
 %{
   db: %{
