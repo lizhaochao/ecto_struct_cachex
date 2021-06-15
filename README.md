@@ -4,7 +4,7 @@ in-memory cache for ecto struct.
 Add ecto_struct_cachex to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
-  [{:ecto_struct_cachex, "~> 0.2.4"}]
+  [{:ecto_struct_cachex, "~> 0.2.5"}]
 end
 ```
 run `mix deps.get`.
@@ -22,13 +22,15 @@ Download via [Gitee](https://gitee.com/lizhaochao/ecto_struct_cachex_sample) or 
 # define Cache by using ESC (ecto_struct_cachex)
 defmodule StructCache do
   use ESC
-  # reformat resp by post_hook callback.
-  def post_hook(resp), do: resp
 end
 
 # use StructCache to inject cache_struct/1, cache_put/1, cache_evict/1 decorators.
 defmodule API do
   use StructCache
+
+  # reformat resp by post_hook callback.
+  def post_hook(resp), do: resp
+
   @decorate cache_struct(User)
   def get_user(conds) do
     ...

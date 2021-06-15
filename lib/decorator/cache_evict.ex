@@ -6,8 +6,6 @@ defmodule ESC.Decorator.CacheEvict do
   defmacro __using__(_opts) do
     quote do
       def cache_evict(struct_name, block, %Decorator.Decorate.Context{args: args_expr} = ctx) do
-        impl_m = __MODULE__
-
         quote do
           with(
             false = _disable <- Config.get_disable(),
@@ -20,7 +18,7 @@ defmodule ESC.Decorator.CacheEvict do
             true -> unquote(block)
             _ -> :args_is_empty
           end
-          |> Hook.post_hook(unquote(impl_m))
+          |> Hook.post_hook(__MODULE__)
         end
       end
     end
