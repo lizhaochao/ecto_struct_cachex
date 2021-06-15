@@ -24,7 +24,7 @@ defmodule ESC do
       {:ok, user}
     end
   end
-  
+
   # pass keyword to get object.
   API.get_user([name: "name", addr: "addr"])
   ```

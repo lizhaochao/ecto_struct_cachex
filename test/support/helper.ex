@@ -21,6 +21,8 @@ end
 defmodule CacheDecorator do
   @moduledoc false
   use ESC
+
+  def post_hook(resp), do: resp
 end
 
 defmodule API do

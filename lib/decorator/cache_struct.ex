@@ -1,11 +1,13 @@
 defmodule ESC.Decorator.CacheStruct do
   @moduledoc false
 
-  alias ESC.{Cache, Config}
+  alias ESC.{Cache, Config, Hook}
 
   defmacro __using__(_opts) do
     quote do
       def cache_struct(struct_name, block, %Decorator.Decorate.Context{args: args_expr} = ctx) do
+        impl_m = __MODULE__
+
         quote do
           with(
             false = _disable <- Config.get_disable(),
@@ -17,6 +19,7 @@ defmodule ESC.Decorator.CacheStruct do
           else
             true -> unquote(block)
           end
+          |> Hook.post_hook(unquote(impl_m))
         end
       end
     end
